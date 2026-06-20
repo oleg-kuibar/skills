@@ -1,0 +1,54 @@
+{
+  "id": "dev-daily/repo-orient-package-snapshot",
+  "title": "Orient to a small TypeScript service",
+  "suite": "dev-daily",
+  "objective": "Measure whether a model can use a repository-orientation skill on realistic project metadata before proposing where to make a change.",
+  "work_type": "repo-orientation",
+  "artifact_types": [
+    "file-tree",
+    "package-json",
+    "source-snippets"
+  ],
+  "prompt_profile": {
+    "developer_prompt_tier": "artifact-backed",
+    "developer_prompt_chars": 151,
+    "developer_prompt_words": 27,
+    "full_input_token_range": {
+      "min": 1500,
+      "max": 3000
+    },
+    "calibration": "Normal developer request plus file tree, package metadata, and snippets; calibrated to the 1.5K-6K full-input range for context-backed coding prompts."
+  },
+  "harnesses": [
+    "codex",
+    "claude-code",
+    "pi"
+  ],
+  "skill_refs": [
+    "repo-orient"
+  ],
+  "prompt": "prompt.md",
+  "rubric": "rubric.md",
+  "tags": [
+    "developer-daily",
+    "repo-orientation",
+    "typescript",
+    "planning"
+  ],
+  "inputs": {
+    "workspace": "prompt-artifacts",
+    "network": false,
+    "requires_tools": false
+  },
+  "expected_outputs": [
+    "Stack identification",
+    "Likely entry points",
+    "Relevant files for the requested change",
+    "Test command from package metadata",
+    "Explicit unknowns"
+  ],
+  "evaluation": {
+    "mode": "human-rubric",
+    "max_score": 10
+  }
+}

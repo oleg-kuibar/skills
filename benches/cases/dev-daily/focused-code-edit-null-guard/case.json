@@ -1,0 +1,52 @@
+{
+  "id": "dev-daily/focused-code-edit-null-guard",
+  "title": "Apply a tiny selected-code edit",
+  "suite": "dev-daily",
+  "objective": "Measure whether a model can use a focused edit skill when the developer prompt is tiny but the harness supplies selected code context.",
+  "work_type": "focused-code-edit",
+  "artifact_types": [
+    "selected-code",
+    "source-snippet"
+  ],
+  "prompt_profile": {
+    "developer_prompt_tier": "micro-edit",
+    "developer_prompt_chars": 20,
+    "developer_prompt_words": 3,
+    "full_input_token_range": {
+      "min": 800,
+      "max": 1600
+    },
+    "calibration": "Micro-edit prompt modeled after the 37-character Transform Code average; selected code and skill text dominate the full model input."
+  },
+  "harnesses": [
+    "codex",
+    "claude-code",
+    "pi"
+  ],
+  "skill_refs": [
+    "focused-code-edit"
+  ],
+  "prompt": "prompt.md",
+  "rubric": "rubric.md",
+  "tags": [
+    "developer-daily",
+    "micro-edit",
+    "selected-code",
+    "typescript"
+  ],
+  "inputs": {
+    "workspace": "prompt-artifacts",
+    "network": false,
+    "requires_tools": false
+  },
+  "expected_outputs": [
+    "Minimal replacement snippet or patch",
+    "Null-safe behavior",
+    "No broad refactor",
+    "No claim that tests passed"
+  ],
+  "evaluation": {
+    "mode": "human-rubric",
+    "max_score": 10
+  }
+}

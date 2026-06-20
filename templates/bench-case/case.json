@@ -1,0 +1,35 @@
+{
+  "id": "suite-id/case-id",
+  "title": "Short case title",
+  "suite": "suite-id",
+  "objective": "Behavior this case is meant to measure.",
+  "work_type": "developer-work-type",
+  "artifact_types": [],
+  "prompt_profile": {
+    "developer_prompt_tier": "normal-dev-chat",
+    "developer_prompt_chars": 240,
+    "developer_prompt_words": 40,
+    "full_input_token_range": {
+      "min": 1500,
+      "max": 6000
+    },
+    "calibration": "Normal developer chat request with harness-added context."
+  },
+  "harnesses": [
+    "codex"
+  ],
+  "skill_refs": [],
+  "prompt": "prompt.md",
+  "rubric": "rubric.md",
+  "tags": [],
+  "inputs": {
+    "workspace": "none",
+    "network": false,
+    "requires_tools": false
+  },
+  "expected_outputs": [],
+  "evaluation": {
+    "mode": "human-rubric",
+    "max_score": 10
+  }
+}

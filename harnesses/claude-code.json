@@ -1,0 +1,11 @@
+{
+  "id": "claude-code",
+  "display_name": "Claude Code",
+  "kind": "coding-agent",
+  "adapter_status": "planned",
+  "skill_projection": "Define a thin projection from canonical skill folders once the target harness contract is selected.",
+  "notes": [
+    "Do not fork canonical skill instructions just to tune for one model.",
+    "Record any required projection differences in a harness adapter before comparing runs."
+  ]
+}

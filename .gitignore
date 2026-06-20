@@ -1,0 +1,13 @@
+.DS_Store
+.env
+.env.*
+.idea/
+.vscode/
+.venv/
+__pycache__/
+*.egg-info/
+*.log
+*.py[cod]
+dist/
+build/
+runs/

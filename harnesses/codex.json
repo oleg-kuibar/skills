@@ -1,0 +1,11 @@
+{
+  "id": "codex",
+  "display_name": "Codex",
+  "kind": "coding-agent",
+  "adapter_status": "usable",
+  "skill_projection": "Use skills/<skill-name> as a Codex skill folder; agents/openai.yaml supplies Codex UI metadata.",
+  "notes": [
+    "Canonical SKILL.md remains the source of truth.",
+    "Run outputs belong under runs/ and should not be committed by default."
+  ]
+}

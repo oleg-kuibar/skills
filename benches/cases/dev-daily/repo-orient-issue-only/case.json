@@ -1,0 +1,51 @@
+{
+  "id": "dev-daily/repo-orient-issue-only",
+  "title": "Orient from a normal bug-report prompt",
+  "suite": "dev-daily",
+  "objective": "Measure whether a model can use a repository-orientation skill from a normal developer chat request without inventing repository details.",
+  "work_type": "repo-orientation",
+  "artifact_types": [
+    "issue-report"
+  ],
+  "prompt_profile": {
+    "developer_prompt_tier": "normal-dev-chat",
+    "developer_prompt_chars": 384,
+    "developer_prompt_words": 61,
+    "full_input_token_range": {
+      "min": 1500,
+      "max": 6000
+    },
+    "calibration": "Normal developer chat prompt in the 30-150 word range, with expected harness-added repository context in the 1.5K-6K token range."
+  },
+  "harnesses": [
+    "codex",
+    "claude-code",
+    "pi"
+  ],
+  "skill_refs": [
+    "repo-orient"
+  ],
+  "prompt": "prompt.md",
+  "rubric": "rubric.md",
+  "tags": [
+    "developer-daily",
+    "normal-dev-chat",
+    "bug-report",
+    "repo-orientation"
+  ],
+  "inputs": {
+    "workspace": "harness-repo-context",
+    "network": false,
+    "requires_tools": false
+  },
+  "expected_outputs": [
+    "Evidence-backed orientation",
+    "Files needed to reduce uncertainty",
+    "No invented stack",
+    "Suggested first move"
+  ],
+  "evaluation": {
+    "mode": "human-rubric",
+    "max_score": 10
+  }
+}

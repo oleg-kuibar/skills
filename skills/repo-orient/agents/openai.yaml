@@ -1,0 +1,7 @@
+interface:
+  display_name: "Repo Orient"
+  short_description: "Orient to repos before making changes"
+  default_prompt: "Use $repo-orient to inspect this repository before planning the change."
+
+policy:
+  allow_implicit_invocation: true
