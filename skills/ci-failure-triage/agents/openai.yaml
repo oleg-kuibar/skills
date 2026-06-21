@@ -1,7 +1,0 @@
-interface:
-  display_name: "CI Failure Triage"
-  short_description: "Diagnose CI failures from logs"
-  default_prompt: "Use $ci-failure-triage to diagnose this failing CI run."
-
-policy:
-  allow_implicit_invocation: true

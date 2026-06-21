@@ -1,70 +1,109 @@
 # Repo Architecture
 
-This repo separates three concerns that are easy to mix together:
+This repository is a personal agent skills and agents library. It has three
+responsibilities:
 
-1. Canonical user skills
-2. Harness-specific projection
-3. Benchmark evidence
+1. Keep reusable skills and agents in one canonical place.
+2. Make them easy to install through skills.sh.
+3. Keep vendored upstream content reproducible through `sources.json`.
+
+Benchmarks, eval suites, model comparisons, and harness adapters should live in a
+separate repository.
+
+The repo should contain only skills and agents that are actually used. Seed
+examples and bench leftovers should not remain in `skills/` or `agents/`.
+Vendored files should be refreshed with `python3 tools/sync_sources.py`, not
+edited by hand unless the change is intentionally local.
 
 ## Canonical Skills
 
-`skills/<skill-name>/SKILL.md` is the source of truth for a developer skill.
-Write it so an agent can use it without knowing which harness it is running in.
-Prefer stable instructions, explicit constraints, and reusable resources over
-harness-specific phrasing.
+`skills/<skill-name>/SKILL.md` is the source of truth for each skill. Write it so
+an agent can use it without knowing which install target it is running in.
 
 Skill folders may include:
 
-- `agents/openai.yaml` for Codex UI metadata
-- `scripts/` for deterministic helper programs
-- `references/` for context loaded only when needed
-- `assets/` for reusable output files
+- `agents/openai.yaml` for Codex UI metadata.
+- `scripts/` for deterministic helper programs.
+- `references/` for detailed context loaded only when needed.
+- `assets/` for reusable output files.
 
-Harness-specific copies, generated projections, and run outputs should not become
-the source of truth.
+Keep `SKILL.md` concise. Put longer examples and supporting material beside it
+instead of turning the entry point into a long manual.
 
-## Harness Manifests
+## Agents
 
-`harnesses/*.json` records what a harness is and how skills are expected to be
-projected into it. These manifests are intentionally small. They should describe
-capabilities, adapter status, and known caveats without encoding live secrets,
-model names, or environment-local paths.
+`agents/<agent-name>.md` contains agent definitions that are useful to keep next
+to the skills they depend on. Agent frontmatter should include `name` and
+`description`, and the `name` must match the file stem.
 
-Use harness manifests to keep comparisons honest:
+## Installation
 
-- Which harness ran the prompt?
-- Which skill projection was used?
-- Which limitations belong to the harness rather than the model?
-- Which adapter still needs implementation?
+The public install path is the skills.sh CLI:
 
-## Bench Cases
-
-`benches/cases/<suite>/<case>/` stores a stable prompt and rubric. A case should
-be runnable against old and new models with the same user-facing prompt and the
-same canonical skills.
-
-Cases should come from real developer daily work: reviewing diffs, orienting to a
-repo, diagnosing CI, planning a small patch, addressing review feedback,
-debugging a regression, writing tests, or summarizing technical tradeoffs from
-project artifacts. Avoid cases whose only value is generic text cleanup.
-
-Each case has:
-
-- `case.json` for metadata and references
-- `prompt.md` for the exact user prompt
-- `rubric.md` for human or automated scoring criteria
-
-Suites in `benches/suites/` group cases into meaningful runs such as rudimentary
-skill use, longer workflow behavior, or harness-adapter stress tests.
-
-## Runs
-
-`runs/` is ignored by git. Put local run outputs there using a path such as:
-
-```text
-runs/<date>/<harness>/<model>/<suite>/<case>/
+```bash
+npx skills add oleg-kuibar/skills --skill vercel-react-best-practices --agent codex --global
 ```
 
-A run folder can contain transcripts, artifacts, model metadata, grader notes,
-and diffs against prior models. Commit only the bench case and rubric unless a
-particular run result is intentionally promoted into documentation.
+Use the same command shape with your preferred package runner:
+
+```bash
+pnpm dlx skills add oleg-kuibar/skills --skill vercel-react-best-practices --agent codex --global
+bunx skills add oleg-kuibar/skills --skill vercel-react-best-practices --agent codex --global
+yarn dlx skills add oleg-kuibar/skills --skill vercel-react-best-practices --agent codex --global
+```
+
+## Source Sync
+
+`sources.json` declares every vendored skill and agent: upstream repo, pinned
+commit SHA, tracked branch, source path, target path, and optional include globs.
+The sync script clones those upstreams to a temporary directory and copies the
+selected files into this repo.
+
+Refresh vendored files:
+
+```bash
+python3 tools/sync_sources.py
+```
+
+Verify vendored files match upstream:
+
+```bash
+python3 tools/sync_sources.py --check
+```
+
+Check tracked branches and update pinned refs:
+
+```bash
+python3 tools/sync_sources.py --update --report /tmp/vendored-skills-update.md
+```
+
+Normal CI only compares against pinned `ref` values. The scheduled GitHub
+workflow runs daily at `09:17 UTC` to check `track` branches and open/update a
+reviewable PR when upstream content changes.
+
+## Repo Page Metadata
+
+`skills.sh.json` controls grouping on the skills.sh repository page. It does not
+change skill contents or install behavior. Keep it out of the repo until there
+are real skills to group.
+
+When a skill is added or removed, update `skills.sh.json` so the public page
+stays readable.
+
+## Checks
+
+`python3 tools/sync_sources.py --check` verifies:
+
+- Vendored files match `sources.json`.
+- Skills and agents are declared in `sources.json`.
+- Source refs are pinned to commit SHAs.
+- Skill folder names.
+- Required `SKILL.md` frontmatter.
+- Non-empty skill bodies.
+- Agent markdown frontmatter.
+- Optional `skills.sh.json` shape and skill references.
+- Placeholder cleanup in strict mode.
+
+The check is structural only. It does not prove that a skill is useful; actual
+quality comes from using the skills in real work and pruning anything that does
+not earn its place.

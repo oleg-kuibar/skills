@@ -1,12 +1,13 @@
-# Skills Bench
+# Skills
 
-This repository keeps reusable developer skills, harness adapters, and benchmark
-cases for comparing how different agents and model generations behave with the
-same prompts and skill material.
+[![skills.sh](https://skills.sh/b/oleg-kuibar/skills)](https://skills.sh/oleg-kuibar/skills)
 
-The main rule: base benches on real daily developer work and real reusable skills,
-then project the same skill and prompt into Codex, Claude Code, Pi, or any later
-harness with the smallest adapter needed for that harness.
+Personal agent skills I use for daily developer work, installed directly through
+[skills.sh](https://www.skills.sh/docs).
+
+Benchmarks and eval cases belong in a separate repo. This repo is intentionally
+just the reusable skill library and install path. Keep only skills and agents
+that are actually useful enough to keep using.
 
 ## Layout
 
@@ -18,94 +19,167 @@ skills/
     scripts/
     references/
     assets/
-harnesses/
-  codex.json
-  claude-code.json
-  pi.json
-benches/
-  suites/
-  cases/
-    suite-id/
-      case-id/
-        case.json
-        prompt.md
-        rubric.md
-runs/
+skills.sh.json  # optional, once there are enough real skills to group
+sources.json
+agents/
+  agent-name.md
 tools/
 ```
 
 - `skills/` contains canonical developer skill sources. Keep each skill lean:
   concise instructions in `SKILL.md`, deterministic helpers in `scripts/`,
   detailed context in `references/`, and reusable output assets in `assets/`.
-- `harnesses/` describes each target environment without assuming all harnesses
-  have the same skill-loading or tool model.
-- `benches/` contains stable developer-work cases, prompts, and rubrics that can
-  be run against multiple harnesses and model versions. Seed suites should use
-  artifacts like diffs, logs, repo snapshots, issue reports, review comments, and
-  failing tests, not abstract toy transformations.
-- Bench cases record `prompt_profile` metadata so runs can compare micro-edit,
-  normal chat, artifact-backed, and long-context agent prompts separately.
-- `runs/` is intentionally ignored. Store local run outputs there while comparing
-  model behavior.
+- `agents/` contains installable agent definitions that are not skills.
+- `skills.sh.json` is optional. Add it when there are enough real skills to group
+  on the skills.sh repo page.
+- `sources.json` declares which upstream files are vendored into this repo.
+- `tools/` contains the source sync/check script used by CI.
 
 See [docs/repo-architecture.md](docs/repo-architecture.md) for the organizing
-principles, and [docs/prompt-length-calibration.md](docs/prompt-length-calibration.md)
-for the prompt-length tiers. See
-[docs/skills-repo-patterns.md](docs/skills-repo-patterns.md) for the external
-skill-repo patterns this layout is tracking.
+principles and [docs/skills-repo-patterns.md](docs/skills-repo-patterns.md) for
+the external skill-repo patterns this layout is tracking.
+
+## Install Skills
+
+The official examples use `npx`, but any package runner that can execute npm
+packages works. Pick the one you already use:
+
+```bash
+npx skills add oleg-kuibar/skills --list
+pnpm dlx skills add oleg-kuibar/skills --list
+bunx skills add oleg-kuibar/skills --list
+yarn dlx skills add oleg-kuibar/skills --list
+```
+
+List the skills in this repo:
+
+```bash
+npx skills add oleg-kuibar/skills --list
+```
+
+Install every skill globally for Codex:
+
+```bash
+npx skills add oleg-kuibar/skills --skill '*' --agent codex --global --yes
+```
+
+Install one skill globally for Codex:
+
+```bash
+npx skills add oleg-kuibar/skills --skill vercel-react-best-practices --agent codex --global
+```
+
+Install one skill globally for Claude Code:
+
+```bash
+npx skills add oleg-kuibar/skills --skill verify-this --agent claude-code --global
+```
+
+Install into the current project instead of your global agent directory:
+
+```bash
+npx skills add oleg-kuibar/skills --skill fix-merge-conflicts --agent codex
+```
+
+Use a local checkout while editing:
+
+```bash
+npx skills add . --skill vercel-composition-patterns --agent codex --global
+```
+
+The skills.sh CLI collects anonymous install telemetry by default. Set
+`DISABLE_TELEMETRY=1` if you want to opt out.
 
 ## Create a Skill
 
 ```bash
-python3 tools/init_skill.py my-skill
+npx skills init skills/my-skill
 ```
 
-Add optional resource folders when they are genuinely useful:
+Then edit `skills/my-skill/SKILL.md` so the frontmatter description clearly
+states what the skill does and when an agent should use it. Add optional
+resource folders when they are genuinely useful:
 
 ```bash
-python3 tools/init_skill.py my-skill --resources scripts,references,assets
+mkdir -p skills/my-skill/scripts skills/my-skill/references skills/my-skill/assets
 ```
 
-After scaffolding, edit `skills/my-skill/SKILL.md` so the frontmatter description
-clearly states what the skill does and when an agent should use it.
+If the repo eventually has enough skills to group on skills.sh, add
+`skills.sh.json`.
 
-## Create a Bench Case
+## Current Library
+
+Skills:
+
+- `vercel-react-best-practices` from [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices)
+- `vercel-composition-patterns` from [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills/tree/main/skills/composition-patterns)
+- `verify-this` from [cursor/plugins](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/verify-this)
+- `weekly-review` from [cursor/plugins](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/weekly-review)
+- `fix-merge-conflicts` from [cursor/plugins](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/fix-merge-conflicts)
+- `thermo-nuclear-code-quality-review` from [cursor/plugins](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/thermo-nuclear-code-quality-review)
+- `grill-with-docs` from [mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs)
+- `domain-modeling` from [mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/domain-modeling)
+
+Agents:
+
+- `thermo-nuclear-code-quality-review` from [cursor/plugins](https://github.com/cursor/plugins/blob/main/cursor-team-kit/agents/thermo-nuclear-code-quality-review.md)
+
+## Credits
+
+This repo vendors skills and agents from public upstream repositories so
+`skills.sh` can install this collection from one self-contained source. The
+source of truth for those vendored copies is [sources.json](sources.json).
+
+- [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills)
+  - [react-best-practices](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices)
+  - [composition-patterns](https://github.com/vercel-labs/agent-skills/tree/main/skills/composition-patterns)
+- [cursor/plugins](https://github.com/cursor/plugins)
+  - [verify-this](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/verify-this)
+  - [weekly-review](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/weekly-review)
+  - [fix-merge-conflicts](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/fix-merge-conflicts)
+  - [thermo-nuclear-code-quality-review skill](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/thermo-nuclear-code-quality-review)
+  - [thermo-nuclear-code-quality-review agent](https://github.com/cursor/plugins/blob/main/cursor-team-kit/agents/thermo-nuclear-code-quality-review.md)
+- [mattpocock/skills](https://github.com/mattpocock/skills)
+  - [grill-with-docs](https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs)
+  - [domain-modeling](https://github.com/mattpocock/skills/tree/main/skills/engineering/domain-modeling)
+
+The vendored copies are intentionally real files generated from `sources.json`,
+rather than symlinks to sibling checkouts. Symlinks to external repos would be
+convenient locally, but they would break for anyone installing this GitHub repo
+through `skills.sh` without the same local directory layout.
+
+Refresh vendored files from upstream:
 
 ```bash
-python3 tools/init_bench_case.py dev-daily/my-case \
-  --skills repo-orient \
-  --work-type repo-orientation \
-  --artifact-types file-tree,source-snippet
+python3 tools/sync_sources.py
 ```
 
-The script registers the case in `benches/suites/<suite>.json`. Then fill in
-`case.json`, `prompt.md`, and `rubric.md`. If the suite file was created from
-scratch, fill in its title and description too. Cases should avoid harness-specific
-assumptions unless the point of the case is to test an adapter.
-
-## Check Structure
+Check that vendored files still match upstream:
 
 ```bash
-python3 tools/check_structure.py --strict
+python3 tools/sync_sources.py --check
 ```
 
-The structural check verifies schemas, references, prompt-length metadata, and
-placeholder cleanup. It does not run model prompts or score model behavior.
-
-Strict checks fail on placeholders in committed skills, harness manifests, and
-bench cases. Use loose checks while drafting:
+Check upstream tracked branches and refresh pinned refs:
 
 ```bash
-python3 tools/check_structure.py
+python3 tools/sync_sources.py --update --report /tmp/vendored-skills-update.md
 ```
 
-## Install for Codex
+`sources.json` pins every vendored source to a commit SHA for stable installs and
+CI checks. The `track` field records the upstream branch checked by the scheduled
+GitHub workflow.
 
-Codex discovers personal skills from `${CODEX_HOME:-$HOME/.codex}/skills`. To
-symlink a canonical skill from this repo into that directory:
+## Check Sources
 
 ```bash
-python3 tools/install_skill.py repo-orient
+python3 tools/sync_sources.py --check
 ```
 
-Use `--copy` instead of the default symlink when you need an independent snapshot.
+The check verifies that vendored files match `sources.json`, that skills and
+agents are declared in the manifest, and that frontmatter plus `skills.sh.json`
+are structurally valid.
+
+GitHub Actions also runs a daily scheduled update at `09:17 UTC`. When upstream
+sources move, the workflow updates `sources.json`, regenerates vendored files,
+and opens or updates the `automation/update-vendored-skills` pull request.

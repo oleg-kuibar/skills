@@ -1,0 +1,32 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Vercel Team",
+      "description": "React and Next.js implementation guidance from Vercel's public agent-skills collection.",
+      "skills": [
+        "vercel-react-best-practices",
+        "vercel-composition-patterns"
+      ]
+    },
+    {
+      "title": "Cursor Team Kit",
+      "description": "Verification, review, weekly-summary, and merge-conflict workflows from Cursor's team kit.",
+      "skills": [
+        "verify-this",
+        "weekly-review",
+        "fix-merge-conflicts",
+        "thermo-nuclear-code-quality-review"
+      ]
+    },
+    {
+      "title": "Matt Pocock",
+      "description": "Design-grilling and domain-modeling workflows from Matt Pocock's skills repo.",
+      "skills": [
+        "grill-with-docs",
+        "domain-modeling"
+      ]
+    }
+  ]
+}

@@ -1,7 +1,0 @@
-interface:
-  display_name: "PR Review Triage"
-  short_description: "Review diffs for behavioral risks"
-  default_prompt: "Use $pr-review-triage to review this diff for actionable issues."
-
-policy:
-  allow_implicit_invocation: true

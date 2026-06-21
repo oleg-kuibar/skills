@@ -10,4 +10,3 @@ __pycache__/
 *.py[cod]
 dist/
 build/
-runs/

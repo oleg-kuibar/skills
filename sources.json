@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "name": "vercel-react-best-practices",
+      "kind": "skill",
+      "repo": "https://github.com/vercel-labs/agent-skills.git",
+      "ref": "f8a72b9603728bb92a217a879b7e62e43ad76c81",
+      "path": "skills/react-best-practices",
+      "target": "skills/vercel-react-best-practices",
+      "include": [
+        "SKILL.md",
+        "metadata.json",
+        "rules/**/*"
+      ],
+      "track": "main"
+    },
+    {
+      "name": "vercel-composition-patterns",
+      "kind": "skill",
+      "repo": "https://github.com/vercel-labs/agent-skills.git",
+      "ref": "f8a72b9603728bb92a217a879b7e62e43ad76c81",
+      "path": "skills/composition-patterns",
+      "target": "skills/vercel-composition-patterns",
+      "include": [
+        "SKILL.md",
+        "metadata.json",
+        "rules/**/*"
+      ],
+      "track": "main"
+    },
+    {
+      "name": "verify-this",
+      "kind": "skill",
+      "repo": "https://github.com/cursor/plugins.git",
+      "ref": "e46364b8be46000b7df0f260550cd712afbb8d36",
+      "path": "cursor-team-kit/skills/verify-this",
+      "target": "skills/verify-this",
+      "include": [
+        "SKILL.md"
+      ],
+      "track": "main"
+    },
+    {
+      "name": "weekly-review",
+      "kind": "skill",
+      "repo": "https://github.com/cursor/plugins.git",
+      "ref": "e46364b8be46000b7df0f260550cd712afbb8d36",
+      "path": "cursor-team-kit/skills/weekly-review",
+      "target": "skills/weekly-review",
+      "include": [
+        "SKILL.md"
+      ],
+      "track": "main"
+    },
+    {
+      "name": "fix-merge-conflicts",
+      "kind": "skill",
+      "repo": "https://github.com/cursor/plugins.git",
+      "ref": "e46364b8be46000b7df0f260550cd712afbb8d36",
+      "path": "cursor-team-kit/skills/fix-merge-conflicts",
+      "target": "skills/fix-merge-conflicts",
+      "include": [
+        "SKILL.md"
+      ],
+      "track": "main"
+    },
+    {
+      "name": "thermo-nuclear-code-quality-review",
+      "kind": "skill",
+      "repo": "https://github.com/cursor/plugins.git",
+      "ref": "e46364b8be46000b7df0f260550cd712afbb8d36",
+      "path": "cursor-team-kit/skills/thermo-nuclear-code-quality-review",
+      "target": "skills/thermo-nuclear-code-quality-review",
+      "include": [
+        "SKILL.md"
+      ],
+      "track": "main"
+    },
+    {
+      "name": "thermo-nuclear-code-quality-review",
+      "kind": "agent",
+      "repo": "https://github.com/cursor/plugins.git",
+      "ref": "e46364b8be46000b7df0f260550cd712afbb8d36",
+      "path": "cursor-team-kit/agents/thermo-nuclear-code-quality-review.md",
+      "target": "agents/thermo-nuclear-code-quality-review.md",
+      "track": "main"
+    },
+    {
+      "name": "grill-with-docs",
+      "kind": "skill",
+      "repo": "https://github.com/mattpocock/skills.git",
+      "ref": "6eeb81b5fcfeeb5bd531dd47ab2f9f2bbea27461",
+      "path": "skills/engineering/grill-with-docs",
+      "target": "skills/grill-with-docs",
+      "include": [
+        "**/*"
+      ],
+      "track": "main"
+    },
+    {
+      "name": "domain-modeling",
+      "kind": "skill",
+      "repo": "https://github.com/mattpocock/skills.git",
+      "ref": "6eeb81b5fcfeeb5bd531dd47ab2f9f2bbea27461",
+      "path": "skills/engineering/domain-modeling",
+      "target": "skills/domain-modeling",
+      "include": [
+        "**/*"
+      ],
+      "track": "main"
+    }
+  ]
+}

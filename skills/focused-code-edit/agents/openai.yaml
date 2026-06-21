@@ -1,7 +1,0 @@
-interface:
-  display_name: "Focused Code Edit"
-  short_description: "Make small scoped code edits"
-  default_prompt: "Use $focused-code-edit to make the smallest safe change to this snippet."
-
-policy:
-  allow_implicit_invocation: true
