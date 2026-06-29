@@ -37,7 +37,10 @@ tools/
 
 See [docs/repo-architecture.md](docs/repo-architecture.md) for the organizing
 principles and [docs/skills-repo-patterns.md](docs/skills-repo-patterns.md) for
-the external skill-repo patterns this layout is tracking.
+the external skill-repo patterns this layout is tracking. Candidate skills and
+agents that look useful but have not earned a place in the installable library
+yet are tracked in
+[docs/candidate-skills-and-agents.md](docs/candidate-skills-and-agents.md).
 
 ## Install Skills
 
@@ -116,6 +119,10 @@ Skills:
 - `verify-this` from [cursor/plugins](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/verify-this)
 - `weekly-review` from [cursor/plugins](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/weekly-review)
 - `fix-merge-conflicts` from [cursor/plugins](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/fix-merge-conflicts)
+- `fix-ci` from [cursor/plugins](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/fix-ci)
+- `loop-on-ci` from [cursor/plugins](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/loop-on-ci)
+- `get-pr-comments` from [cursor/plugins](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/get-pr-comments)
+- `make-pr-easy-to-review` from [cursor/plugins](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/make-pr-easy-to-review)
 - `thermo-nuclear-code-quality-review` from [cursor/plugins](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/thermo-nuclear-code-quality-review)
 - `grill-with-docs` from [mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs)
 - `domain-modeling` from [mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/domain-modeling)
@@ -123,6 +130,7 @@ Skills:
 Agents:
 
 - `thermo-nuclear-code-quality-review` from [cursor/plugins](https://github.com/cursor/plugins/blob/main/cursor-team-kit/agents/thermo-nuclear-code-quality-review.md)
+- `ci-watcher` from [cursor/plugins](https://github.com/cursor/plugins/blob/main/cursor-team-kit/agents/ci-watcher.md)
 
 ## Credits
 
@@ -137,8 +145,13 @@ source of truth for those vendored copies is [sources.json](sources.json).
   - [verify-this](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/verify-this)
   - [weekly-review](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/weekly-review)
   - [fix-merge-conflicts](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/fix-merge-conflicts)
+  - [fix-ci](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/fix-ci)
+  - [loop-on-ci](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/loop-on-ci)
+  - [get-pr-comments](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/get-pr-comments)
+  - [make-pr-easy-to-review](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/make-pr-easy-to-review)
   - [thermo-nuclear-code-quality-review skill](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/thermo-nuclear-code-quality-review)
   - [thermo-nuclear-code-quality-review agent](https://github.com/cursor/plugins/blob/main/cursor-team-kit/agents/thermo-nuclear-code-quality-review.md)
+  - [ci-watcher agent](https://github.com/cursor/plugins/blob/main/cursor-team-kit/agents/ci-watcher.md)
 - [mattpocock/skills](https://github.com/mattpocock/skills)
   - [grill-with-docs](https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs)
   - [domain-modeling](https://github.com/mattpocock/skills/tree/main/skills/engineering/domain-modeling)

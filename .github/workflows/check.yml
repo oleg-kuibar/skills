@@ -14,3 +14,4 @@ jobs:
         with:
           python-version: "3.11"
       - run: python3 tools/sync_sources.py --check
+      - run: DISABLE_TELEMETRY=1 npx --yes skills add . --list

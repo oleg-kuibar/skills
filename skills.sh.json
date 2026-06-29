@@ -12,11 +12,15 @@
     },
     {
       "title": "Cursor Team Kit",
-      "description": "Verification, review, weekly-summary, and merge-conflict workflows from Cursor's team kit.",
+      "description": "Verification, review, PR, CI, weekly-summary, and merge-conflict workflows from Cursor's team kit.",
       "skills": [
         "verify-this",
         "weekly-review",
         "fix-merge-conflicts",
+        "fix-ci",
+        "loop-on-ci",
+        "get-pr-comments",
+        "make-pr-easy-to-review",
         "thermo-nuclear-code-quality-review"
       ]
     },
