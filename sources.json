@@ -147,7 +147,7 @@
       "name": "grill-with-docs",
       "kind": "skill",
       "repo": "https://github.com/mattpocock/skills.git",
-      "ref": "448d0adee7cb797db5a2ad278e9e8d6c874e12af",
+      "ref": "5694f8360923abd5052ed15be46446050ee9f317",
       "path": "skills/engineering/grill-with-docs",
       "target": "skills/grill-with-docs",
       "include": [
@@ -159,7 +159,7 @@
       "name": "domain-modeling",
       "kind": "skill",
       "repo": "https://github.com/mattpocock/skills.git",
-      "ref": "448d0adee7cb797db5a2ad278e9e8d6c874e12af",
+      "ref": "5694f8360923abd5052ed15be46446050ee9f317",
       "path": "skills/engineering/domain-modeling",
       "target": "skills/domain-modeling",
       "include": [
