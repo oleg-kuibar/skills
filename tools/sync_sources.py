@@ -40,6 +40,16 @@ def error(path: Path, message: str) -> str:
     return f"ERROR: {relative(path)}: {message}"
 
 
+def owned_targets() -> set[str]:
+    """Targets authored in this repo, so they have no upstream to pin or diff."""
+    try:
+        data = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return set()
+    owned = data.get("owned") if isinstance(data, dict) else None
+    return set(owned) if isinstance(owned, list) else set()
+
+
 def load_sources() -> tuple[list[Source], list[str]]:
     try:
         data = json.loads(MANIFEST.read_text(encoding="utf-8"))
@@ -223,7 +233,7 @@ def sync_or_check(sources: list[Source], check: bool) -> list[str]:
             else:
                 copy_source(source_root, ROOT / source.target, files)
 
-    expected_targets = {source.target.as_posix() for source in sources}
+    expected_targets = {source.target.as_posix() for source in sources} | owned_targets()
     for extra in sorted(installable_targets() - expected_targets):
         errors.append(error(ROOT / extra, "not declared in sources.json"))
     return errors
