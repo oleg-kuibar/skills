@@ -27,7 +27,8 @@ tools/
 - `skills/` contains installable skills.
 - `agents/` contains installable agent definitions that are not skills.
 - `skills.sh.json` groups the public skills.sh repo page.
-- `sources.json` is the source of truth for vendored upstream files.
+- `sources.json` is the source of truth for vendored upstream files. Its `owned`
+  array lists files written here, which have no upstream to pin or diff.
 - `tools/sync_sources.py` refreshes or checks those vendored files.
 
 ## Install
@@ -59,14 +60,27 @@ npx skills add . --skill vercel-composition-patterns --agent codex --global
 The skills.sh CLI collects anonymous install telemetry by default. Set
 `DISABLE_TELEMETRY=1` to opt out.
 
+## Token discipline agents
+
+`locate` and `check` are Haiku subagents that keep file contents and clean tool
+output out of the main session. `locate` answers "where is X" with paths and line
+ranges. `check` runs the project's own typecheck, lint, and tests and returns only
+the failures as `path:line message`. A clean run costs one line.
+
+They came out of measuring where my own Claude Code tokens went across 281
+sessions. Both are read-only.
+
 ## Add a Skill
 
-Add an entry to `sources.json` with a pinned commit SHA and a `target` under
-`skills/` or `agents/`, then refresh:
+Vendored from upstream: add an entry to `sources.json` with a pinned commit SHA
+and a `target` under `skills/` or `agents/`, then refresh:
 
 ```bash
 python3 tools/sync_sources.py
 ```
+
+Written here: add the path to the `owned` array in `sources.json` instead. Nothing
+to sync.
 
 ## Check
 

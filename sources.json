@@ -123,5 +123,9 @@
         "**/*"
       ]
     }
+  ],
+  "owned": [
+    "agents/locate.md",
+    "agents/check.md"
   ]
 }
