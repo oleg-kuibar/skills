@@ -86,6 +86,14 @@ The hook fires on a new session, on `/clear`, and on compaction, which drops a
 parked handoff the same way a clear does. A handoff older than three days is
 injected with a line saying how old it is.
 
+Picking one up renames it to `<branch>.md.picked` instead of deleting it, and
+keeps it 30 days. If a session is cleared before the handoff is read, rename it
+back:
+
+```bash
+mv .claude/handoff/<branch>.md.picked .claude/handoff/<branch>.md
+```
+
 The parked file holds whatever the session had in context. It is hidden by a
 `.gitignore` inside `.claude/handoff/`, but the redaction of secrets is done by
 the model, not enforced by the script.
@@ -101,9 +109,13 @@ against `SKILL.md` on five axes:
 The useful output is not the score. It is the list of facts that were in the
 session, would die with the context, and did not make it into the handoff. Six
 rounds of that raised a handoff from 20/25 to 23/25 and produced five rule
-changes in `SKILL.md`. It drops every tool result before judging, so a 1.4MB
-transcript is graded on 58KB, and a run costs under $0.50. `--digest` prints
-what the judge would see and spends nothing.
+changes in `SKILL.md`.
+
+It drops every tool result before judging, which leaves about 4% of the
+transcript, so a whole session can be graded for well under a dollar. The judge
+loads no settings, so it grades against `SKILL.md` and not against your
+`CLAUDE.md` or hooks, and a score means the same thing on another machine.
+`--digest` prints what the judge would see and spends nothing.
 
 ## Add a Skill
 

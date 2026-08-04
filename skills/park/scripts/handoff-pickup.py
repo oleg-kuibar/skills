@@ -109,15 +109,12 @@ def age_note(path, now):
 
 
 def sweep_picked(directory, now):
-    """Delete already-picked handoffs past their recovery window. Returns the count."""
-    gone = 0
+    """Delete already-picked handoffs past their recovery window."""
     cutoff = now - datetime.timedelta(days=DISCARD_PICKED_AFTER_DAYS)
     for old in directory.glob(f"*{PICKED_SUFFIX}"):
         stamp = datetime.datetime.fromtimestamp(old.stat().st_mtime, datetime.timezone.utc)
         if stamp < cutoff:
             old.unlink()
-            gone += 1
-    return gone
 
 
 def pickup(payload, env=None, now=None):
@@ -172,8 +169,9 @@ def register(settings, command):
         data = json.loads(settings.read_text(encoding="utf-8"))  # broken JSON: raise, do not clobber
     starts = data.setdefault("hooks", {}).setdefault("SessionStart", [])
     kept = [h for h in starts if "handoff-pickup" not in json.dumps(h)]
+    # Built from PICKUP_ON, so the registered matcher cannot drift from what pickup honours.
     kept.append({
-        "matcher": "startup|clear|compact",
+        "matcher": "|".join(PICKUP_ON),
         "hooks": [{"type": "command", "command": command, "timeout": 5}],
     })
     data["hooks"]["SessionStart"] = kept
@@ -190,8 +188,7 @@ def install():
     settings = register(claude_dir / "settings.json", f'{interpreter()} "{link}"')
     print(f"hook  {link}")
     print(f"settings  {settings}")
-    print("Registered on SessionStart for startup, clear, and compact. "
-          "Restart Claude Code once.")
+    print(f"Registered on SessionStart for {', '.join(PICKUP_ON)}. Restart Claude Code once.")
 
 
 def selftest():
@@ -294,6 +291,8 @@ def selftest():
         ours = [h for h in starts if "handoff-pickup" in json.dumps(h)]
         assert len(ours) == 1, f"one entry after two installs, got {len(ours)}"
         assert ours[0]["hooks"][0]["command"] == "py /y/handoff-pickup.py", "latest path wins"
+        # A source in the matcher but not in PICKUP_ON is a hook that runs and does nothing.
+        assert set(ours[0]["matcher"].split("|")) == set(PICKUP_ON), ours[0]["matcher"]
     print("selftest ok")
 
 

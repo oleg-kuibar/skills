@@ -56,6 +56,10 @@ That leaves six things. The last three are the ones with no other home:
   decision the user made and the reason, an approach that failed and why. Anything that
   took a command, a build, or a model call to learn goes here as the value, not as a
   pointer. Losing it means paying for it twice.
+  A number also carries what it was measured on: the command or tool, and anything about
+  the input or the machine the next measurement would have to match. Two numbers compare
+  only if their conditions do. Without them a saved number reads like evidence and cannot
+  be repeated, which is worse than not saving it.
 - **The option you rejected, and what rejected it.** Its own question, because it is
   the one a list of numbers hides. Name the alternative you considered and the evidence
   that killed it. Without this the next session re-opens a road already closed.
