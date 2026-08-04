@@ -80,8 +80,11 @@ it up. It needs a one-time hook install, Claude Code only:
 
 That symlinks the script into `~/.claude/hooks/` and adds a `SessionStart` hook
 to `~/.claude/settings.json`, leaving your other settings and hooks alone.
-Re-running it is safe. Use `~/.agents/skills/park/...` if you installed through
-skills.sh. The script has its own check: `--selftest`.
+Re-running it is safe. The script has its own check: `--selftest`.
+
+The parked file holds whatever the session had in context. It is hidden by a
+`.gitignore` inside `.claude/handoff/`, but the redaction of secrets is done by
+the model, not enforced by the script.
 
 ## Add a Skill
 

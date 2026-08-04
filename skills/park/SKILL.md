@@ -13,13 +13,13 @@ exclusive. Pick one.
 
 ## Setup
 
-One command, once per machine, run from wherever this skill was installed:
+One command, once per machine:
 
 ```
 /usr/bin/python3 ~/.claude/skills/park/scripts/handoff-pickup.py --install
 ```
 
-`~/.agents/skills/park/scripts/` is the path when installed through skills.sh.
+Claude Code only. The hook it registers is what reads the handoff back.
 
 It symlinks the script to `~/.claude/hooks/handoff-pickup.py` and registers a
 `SessionStart` hook in `~/.claude/settings.json`, keeping every other setting and hook.
