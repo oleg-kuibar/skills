@@ -13,6 +13,7 @@ Git is read by parsing .git rather than by subprocess, for speed and to avoid a
 version-manager shim in the way.
 """
 
+import datetime
 import json
 import os
 import pathlib
@@ -20,15 +21,26 @@ import re
 import shutil
 import sys
 
-# resume already carries the old context; compact just rewrote it. Injecting on
-# either duplicates what is in the window.
-PICKUP_ON = ("startup", "clear")
+# resume already carries the old context. compact does not: the docs list what survives
+# it, and a conversation-only fact is not on the list, so a parked handoff is exactly
+# what compaction drops. https://code.claude.com/docs/en/context-window
+PICKUP_ON = ("startup", "clear", "compact")
 
 PREAMBLE = (
-    "Handoff written by the previous session in this directory, before it was "
-    "cleared. It is context for continuing that work, not a request to start "
+    "Handoff written earlier in this directory, before the context was cleared or "
+    "compacted. It is context for continuing that work, not a request to start "
     "acting. Read it, then wait for the user.\n\n"
 )
+
+# How old a handoff can be before the preamble says so. Claude Code stamps its own auto
+# memory with a `modified` field for the same reason: the age of a fact tells the reader
+# how much to trust it. https://code.claude.com/docs/en/memory
+STALE_AFTER_DAYS = 3
+
+# Kept for recovery from a premature /clear, then aged out. Without this they are one
+# per branch forever, holding work state nobody reads.
+PICKED_SUFFIX = ".md.picked"
+DISCARD_PICKED_AFTER_DAYS = 30
 
 # Handoffs are transient notes, never committed. A .gitignore inside the directory
 # ignoring itself keeps every repo clean without editing any repo's .gitignore.
@@ -83,9 +95,35 @@ def prepare(path):
     return path
 
 
-def pickup(payload, env=None):
+def age_note(path, now):
+    """A line about when this was written, or "" while it is still fresh. The mtime is
+    already on disk, so dating a handoff costs nothing in the file itself."""
+    written = datetime.datetime.fromtimestamp(path.stat().st_mtime, datetime.timezone.utc)
+    days = (now - written).days
+    if days < STALE_AFTER_DAYS:
+        return ""
+    return (
+        f"It was written {days} days ago, so check anything time-sensitive in it against "
+        "the current branch state before relying on it.\n\n"
+    )
+
+
+def sweep_picked(directory, now):
+    """Delete already-picked handoffs past their recovery window. Returns the count."""
+    gone = 0
+    cutoff = now - datetime.timedelta(days=DISCARD_PICKED_AFTER_DAYS)
+    for old in directory.glob(f"*{PICKED_SUFFIX}"):
+        stamp = datetime.datetime.fromtimestamp(old.stat().st_mtime, datetime.timezone.utc)
+        if stamp < cutoff:
+            old.unlink()
+            gone += 1
+    return gone
+
+
+def pickup(payload, env=None, now=None):
     """Return context text to inject, or None. Consumes the file when it returns text."""
     env = os.environ if env is None else env
+    now = datetime.datetime.now(datetime.timezone.utc) if now is None else now
     if payload.get("source") not in PICKUP_ON:
         return None
     # A background agent (`claude --bg`) already carries its handoff as its prompt, and
@@ -97,9 +135,11 @@ def pickup(payload, env=None):
     if not path.is_file():
         return None
     text = path.read_text(encoding="utf-8")
+    note = age_note(path, now)
+    sweep_picked(path.parent, now)  # before the rename, so this one is never a candidate
     # Keep the last one picked up per branch, for recovery from a premature /clear.
-    path.replace(path.with_suffix(".md.picked"))
-    return PREAMBLE + text
+    path.replace(path.with_suffix(PICKED_SUFFIX))
+    return PREAMBLE + note + text
 
 
 def interpreter():
@@ -133,7 +173,7 @@ def register(settings, command):
     starts = data.setdefault("hooks", {}).setdefault("SessionStart", [])
     kept = [h for h in starts if "handoff-pickup" not in json.dumps(h)]
     kept.append({
-        "matcher": "startup|clear",
+        "matcher": "startup|clear|compact",
         "hooks": [{"type": "command", "command": command, "timeout": 5}],
     })
     data["hooks"]["SessionStart"] = kept
@@ -150,7 +190,8 @@ def install():
     settings = register(claude_dir / "settings.json", f'{interpreter()} "{link}"')
     print(f"hook  {link}")
     print(f"settings  {settings}")
-    print("Registered on SessionStart for startup and clear. Restart Claude Code once.")
+    print("Registered on SessionStart for startup, clear, and compact. "
+          "Restart Claude Code once.")
 
 
 def selftest():
@@ -205,15 +246,35 @@ def selftest():
 
         got = pickup({"source": "clear", "cwd": cwd})
         assert got and got.endswith("state of play"), got
+        assert "days ago" not in got, "a handoff written just now is not stale"
         assert not path.is_file(), "picked up handoff must be consumed"
-        assert path.with_suffix(".md.picked").is_file(), "kept for recovery"
+        assert path.with_suffix(PICKED_SUFFIX).is_file(), "kept for recovery"
 
         assert pickup({"source": "clear", "cwd": cwd}) is None, "picked up only once"
 
         # A second park+pickup replaces the old .picked rather than piling up.
         path.write_text("second", encoding="utf-8")
-        pickup({"source": "clear", "cwd": cwd})
-        assert len(list(path.parent.glob("*.picked"))) == 1, "one .picked per branch"
+        assert pickup({"source": "compact", "cwd": cwd}), "compaction drops it too"
+        assert len(list(path.parent.glob(f"*{PICKED_SUFFIX}"))) == 1, "one .picked per branch"
+
+        # Age is read from the mtime, so both checks move the clock instead of the file.
+        def written_at(p):
+            return datetime.datetime.fromtimestamp(p.stat().st_mtime, datetime.timezone.utc)
+
+        path.write_text("old news", encoding="utf-8")
+        later = written_at(path) + datetime.timedelta(days=STALE_AFTER_DAYS)
+        got = pickup({"source": "clear", "cwd": cwd}, now=later)
+        assert f"{STALE_AFTER_DAYS} days ago" in got, got
+
+        # A .picked for a branch nobody parks on again is what actually piles up.
+        abandoned = path.parent / f"deleted-branch{PICKED_SUFFIX}"
+        abandoned.write_text("from a merged branch", encoding="utf-8")
+        path.write_text("newest", encoding="utf-8")
+        gone = written_at(abandoned) + datetime.timedelta(days=DISCARD_PICKED_AFTER_DAYS, seconds=1)
+        got = pickup({"source": "clear", "cwd": cwd}, now=gone)
+        assert got.endswith("newest"), "the sweep must not eat the handoff being picked up"
+        assert not abandoned.is_file(), "a .picked past its window is deleted"
+        assert path.with_suffix(PICKED_SUFFIX).is_file(), "this branch keeps its own"
 
         # --install: writable link, and a settings merge that keeps what was there.
         home = tmp / "home" / ".claude"

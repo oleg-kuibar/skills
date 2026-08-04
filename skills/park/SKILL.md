@@ -22,8 +22,9 @@ One command, once per machine:
 Claude Code only. The hook it registers is what reads the handoff back.
 
 It symlinks the script to `~/.claude/hooks/handoff-pickup.py` and registers a
-`SessionStart` hook in `~/.claude/settings.json`, keeping every other setting and hook.
-Re-running it is safe. Restart Claude Code once after installing.
+`SessionStart` hook in `~/.claude/settings.json` for `startup`, `clear`, and `compact`,
+keeping every other setting and hook. Re-running it is safe. Restart Claude Code once
+after installing.
 
 Without the hook, nothing reads what /park writes, so the file branch below is a dead
 end. Check with `ls ~/.claude/hooks/handoff-pickup.py`.
@@ -76,7 +77,10 @@ you write. Say so, point at Setup above, then write
 to dashes.
 
 A `SessionStart` hook injects that file the next time a session starts on this branch,
-then consumes it. Nothing else to run.
+then consumes it. Nothing else to run. It fires on `/clear`, on a new session, and on
+compaction, which drops a parked handoff the same way a clear does. Once it is more than
+three days old the injected text says how old, so the reader knows to check it against
+the branch.
 
 Open with a line saying this is parked context to read, not a task to start on. The
 next session picks it up mid-turn and should wait for the user.

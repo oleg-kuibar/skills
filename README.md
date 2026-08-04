@@ -82,6 +82,10 @@ That symlinks the script into `~/.claude/hooks/` and adds a `SessionStart` hook
 to `~/.claude/settings.json`, leaving your other settings and hooks alone.
 Re-running it is safe. The script has its own check: `--selftest`.
 
+The hook fires on a new session, on `/clear`, and on compaction, which drops a
+parked handoff the same way a clear does. A handoff older than three days is
+injected with a line saying how old it is.
+
 The parked file holds whatever the session had in context. It is hidden by a
 `.gitignore` inside `.claude/handoff/`, but the redaction of secrets is done by
 the model, not enforced by the script.
