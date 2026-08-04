@@ -118,3 +118,18 @@ DISABLE_TELEMETRY=1 npx --yes skills add . --list
 
 To update vendored upstream content, change the pinned `ref` in `sources.json`
 and run `python3 tools/sync_sources.py`.
+
+Handoff quality cannot be checked by a test, so `park` ships a grader. It reads
+the session transcript and the handoff written from it, and scores the handoff
+against `SKILL.md` on five axes:
+
+```bash
+/usr/bin/python3 ~/.claude/skills/park/scripts/grade-handoff.py
+```
+
+The useful output is not the score. It is the list of facts that were in the
+session, would die with the context, and did not make it into the handoff. Six
+rounds of that raised a handoff from 20/25 to 23/25 and produced five rule
+changes in `SKILL.md`. It drops every tool result before judging, so a 1.4MB
+transcript is graded on 58KB, and a run costs under $0.50. `--digest` prints
+what the judge would see and spends nothing.

@@ -35,23 +35,55 @@ Only what dies with the context window. A fact recorded in a commit, a diff, a
 ticket, a plan file, or `CLAUDE.md` survives on its own, so reference it by path or
 URL rather than restating it.
 
-That leaves four things, and the fourth is worth the most:
+That leaves six things. The last three are the ones with no other home:
 
 - **Task.** What is being done, and how far it got.
-- **Next step.** The single concrete action to take, specific enough to start on.
+- **Next step.** One concrete action, naming a file, a command, or a decision that is
+  waiting on the user. "Nothing pending" is not a next step. If the work is finished,
+  write what the reader should pick up instead, however small.
+  Make it runnable from a fresh shell: every file gets a path that resolves, every
+  command gets its arguments. Then check each path you just wrote. If one is under a
+  temp directory, a job dir, or a clipboard, the step cannot be run later: copy the
+  content into this file, or move the file somewhere that survives, and write that path
+  instead. This check is the difference between a next step and a dead reference.
 - **Live paths.** Files mid-edit, the branch, a worktree that is not the obvious
-  one, a running background job. Paths and line ranges, not their contents.
-- **Findings that cost something to learn.** A wrong turn already ruled out, a
-  measured number, a decision the user made and the reason, an approach that failed
-  and why. This is the part with no other home. Losing it means paying for it twice.
+  one, a running background job. Paths and line ranges, not their contents. Include
+  state the machine is still in: a restart not done, a commit not pushed, a process
+  left running. For an uncommitted edit, write why it was made, not that it exists.
+  `git status` and `git diff` return the state and the content. The reason does not
+  survive anywhere.
+- **Findings that cost something to learn.** A measured number with its units, a
+  decision the user made and the reason, an approach that failed and why. Anything that
+  took a command, a build, or a model call to learn goes here as the value, not as a
+  pointer. Losing it means paying for it twice.
+- **The option you rejected, and what rejected it.** Its own question, because it is
+  the one a list of numbers hides. Name the alternative you considered and the evidence
+  that killed it. Without this the next session re-opens a road already closed.
+- **Open threads.** A question the user never answered, a concern raised and left
+  unresolved, something you tried to verify and could not. Nothing in a repo records
+  a question, so these die without a trace.
 
 Redact secrets: keys, tokens, passwords, personal data.
 
 If the user named a focus, write toward that and cut the rest.
 
-Under ~15 lines is normal. A parked task points at work rather than recording it.
-The failure is a file that reads like a transcript, because whoever picks it up pays
-for every line.
+Around 30 lines is normal, measured across handoffs written by this skill. A long session
+with many findings runs longer, and 80 lines has scored well. Length is not the test. Per
+line is: every line either carries a fact that dies with the context, or it goes. A parked
+task points at work rather than recording it, and whoever picks it up pays for every line.
+
+Cut anything a shell command recovers. A branch name, whether a test passes, what is
+staged, what an uncommitted diff contains: the next session can ask. Narration of the
+last exchange goes too.
+
+One exception, and it is the most common way a handoff loses its best content: a measured
+number goes in the file, never a path to where it is stored. A benchmark result, a score,
+a byte count, a cost. Writing the path instead looks like a reference but is not one,
+because the reader has to re-run the work to get the number back. Referencing by path is
+only for content that is already durable: a commit, a tracked file, a ticket.
+
+Noticing something will be lost and writing the doomed path anyway is the failure this
+rule exists for. Saying a file will vanish does not rescue it.
 
 ## Where it goes
 
@@ -105,9 +137,15 @@ picks up its own handoff on top of its prompt.
 
 ## Done when
 
-Every one of the four kinds above is either written down or checked and found not to
-apply, and someone with no memory of this conversation could take the next step from
-what you wrote alone.
+Someone with no memory of this conversation could take the next step from what you
+wrote alone.
+
+Before writing, scan the whole conversation once for the last three kinds: findings,
+rejected options, open threads. They are what the earlier turns hold and what recency
+pulls you away from. A handoff that covers only the last few turns is the common failure.
+
+Task, next step, and live paths are always written. A finding, a rejected option, or an
+open thread may genuinely not exist, but say which you looked for.
 
 Then one line: the file path and that `/clear` is safe now, or the agent name and
 that it is already running.
