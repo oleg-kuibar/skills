@@ -126,6 +126,7 @@
   ],
   "owned": [
     "agents/locate.md",
-    "agents/check.md"
+    "agents/check.md",
+    "skills/park"
   ]
 }

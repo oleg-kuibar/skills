@@ -37,7 +37,8 @@
       "description": "Haiku subagents that answer from a small report instead of loading files into the main session. Written after measuring where my own Claude Code tokens go.",
       "skills": [
         "locate",
-        "check"
+        "check",
+        "park"
       ]
     }
   ]

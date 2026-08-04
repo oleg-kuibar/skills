@@ -70,6 +70,19 @@ the failures as `path:line message`. A clean run costs one line.
 They came out of measuring where my own Claude Code tokens went across 281
 sessions. Both are read-only.
 
+`park` writes the live state of a conversation to a gitignored file beside the
+work, keyed on the branch, so the session can be cleared and the next one picks
+it up. It needs a one-time hook install, Claude Code only:
+
+```bash
+/usr/bin/python3 ~/.claude/skills/park/scripts/handoff-pickup.py --install
+```
+
+That symlinks the script into `~/.claude/hooks/` and adds a `SessionStart` hook
+to `~/.claude/settings.json`, leaving your other settings and hooks alone.
+Re-running it is safe. Use `~/.agents/skills/park/...` if you installed through
+skills.sh. The script has its own check: `--selftest`.
+
 ## Add a Skill
 
 Vendored from upstream: add an entry to `sources.json` with a pinned commit SHA
