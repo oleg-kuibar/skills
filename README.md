@@ -45,6 +45,9 @@ Install every skill globally for Codex:
 npx skills add oleg-kuibar/skills --skill '*' --agent codex --global --yes
 ```
 
+`--agent` names the tool, not a model. `codex` and `claude-code` are both valid,
+`claude` is not. An unknown name is rejected with the full list of accepted ones.
+
 Install one skill globally for Codex:
 
 ```bash
@@ -72,9 +75,11 @@ sessions. Both are read-only.
 
 `park` writes the live state of a conversation to a gitignored file beside the
 work, keyed on the branch, so the session can be cleared and the next one picks
-it up. It needs a one-time hook install, Claude Code only:
+it up. It is Claude Code only, so install it with `--agent claude-code`, then run
+the hook install once:
 
 ```bash
+npx skills add oleg-kuibar/skills --skill park --agent claude-code --global
 /usr/bin/python3 ~/.claude/skills/park/scripts/handoff-pickup.py --install
 ```
 
@@ -97,6 +102,13 @@ mv .claude/handoff/<branch>.md.picked .claude/handoff/<branch>.md
 The parked file holds whatever the session had in context. It is hidden by a
 `.gitignore` inside `.claude/handoff/`, but the redaction of secrets is done by
 the model, not enforced by the script.
+
+There is one handoff per branch, so two sessions in the same repo share it. When
+`/park` asks for the path and a handoff is already sitting there unread, the
+script warns and prints its age, and the skill tells the model to read that file
+and fold anything still true into the new one. Emacs handles two writers to one
+file the same way. Nothing locks the file, so the merge is the model's job, and a
+warning that gets ignored still costs the earlier handoff.
 
 Handoff quality cannot be checked by a test, so `park` ships a grader. It reads
 the session transcript and the handoff written from it, and scores the handoff

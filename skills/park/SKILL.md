@@ -99,7 +99,13 @@ Ask for the path, do not derive it:
 /usr/bin/python3 ~/.claude/hooks/handoff-pickup.py --path
 ```
 
-It prints the file to write and creates the directory. Overwrite that file.
+It creates the directory and prints the file to write as its last line. Overwrite that file.
+
+If it also warns that a handoff is already parked there, read that file before you write.
+There is one per branch, so writing destroys it. Fold anything still true into what you
+write, drop what your session has already finished, then overwrite. The warning carries the
+age: minutes old is almost always this same session parking twice, and overwriting is right.
+Hours or days old is another session, and its state is not yours to throw away.
 
 The path is `<repo-root>/.claude/handoff/<branch>.md`, falling back to the current
 directory when there is no repo, and it is gitignored. Living beside the work means a

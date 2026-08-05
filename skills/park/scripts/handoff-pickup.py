@@ -95,6 +95,25 @@ def prepare(path):
     return path
 
 
+def occupied_note(path, now):
+    """A warning for whoever is about to overwrite an unread handoff, or "" when the file
+    is free. One file per branch, so a second /park destroys the first: Emacs solves the
+    same collision the same way, by comparing mtimes and telling the writer rather than
+    locking or merging. https://www.gnu.org/software/emacs/manual/html_node/emacs/Interlocking.html
+    A fresh mtime is usually the same session re-parking, so the age is what makes the
+    difference decidable and the caller is left to decide it."""
+    if not path.is_file():
+        return ""
+    written = datetime.datetime.fromtimestamp(path.stat().st_mtime, datetime.timezone.utc)
+    mins = max(0, int((now - written).total_seconds() // 60))
+    age = f"{mins // 1440}d" if mins >= 1440 else f"{mins // 60}h" if mins >= 60 else f"{mins}m"
+    return (
+        f"warning: a handoff is already parked here, written {age} ago "
+        f"({written.astimezone().isoformat(timespec='minutes')}), and nobody has read it.\n"
+        "Read it first and fold anything still true into what you write, then overwrite.\n"
+    )
+
+
 def age_note(path, now):
     """A line about when this was written, or "" while it is still fresh. The mtime is
     already on disk, so dating a handoff costs nothing in the file itself."""
@@ -135,6 +154,8 @@ def pickup(payload, env=None, now=None):
     note = age_note(path, now)
     sweep_picked(path.parent, now)  # before the rename, so this one is never a candidate
     # Keep the last one picked up per branch, for recovery from a premature /clear.
+    # replace is atomic, so two sessions starting at once cannot both read this: one gets
+    # the text, the other sees no file and stays silent, which is the intended once-only.
     path.replace(path.with_suffix(PICKED_SUFFIX))
     return PREAMBLE + note + text
 
@@ -213,6 +234,10 @@ def selftest():
         got = handoff_path(repo)
         assert got.parent == repo / ".claude/handoff", f"branch name escaped the dir: {got}"
         assert got.name.endswith("escape.md") and "/" not in got.name, got.name
+        (repo / ".git" / "HEAD").write_text("ref: refs/heads/v1.2-hotfix\n")
+        dotted = handoff_path(repo)
+        assert dotted.name == "v1.2-hotfix.md", dotted.name
+        assert dotted.with_suffix(PICKED_SUFFIX).name == "v1.2-hotfix.md.picked", "a dot in a branch"
         (repo / ".git" / "HEAD").write_text("ref: refs/heads/...\n")
         assert handoff_path(repo).name == "_.md", "a name of only dots is not a filename"
         (repo / ".git" / "HEAD").write_text("9f1c0de0\n")
@@ -263,6 +288,15 @@ def selftest():
         got = pickup({"source": "clear", "cwd": cwd}, now=later)
         assert f"{STALE_AFTER_DAYS} days ago" in got, got
 
+        # Overwriting an unread handoff is silent data loss, so --path warns about it.
+        assert not path.is_file() and occupied_note(path, later) == "", "free path, no warning"
+        path.write_text("about to be flattened", encoding="utf-8")
+        now = written_at(path)
+        assert "0m ago" in occupied_note(path, now), "a same-session re-park reads as minutes"
+        assert "2h ago" in occupied_note(path, now + datetime.timedelta(hours=2, minutes=5))
+        assert "3d ago" in occupied_note(path, now + datetime.timedelta(days=3))
+        path.unlink()
+
         # A .picked for a branch nobody parks on again is what actually piles up.
         abandoned = path.parent / f"deleted-branch{PICKED_SUFFIX}"
         abandoned.write_text("from a merged branch", encoding="utf-8")
@@ -304,7 +338,11 @@ if __name__ == "__main__":
         install()
         raise SystemExit(0)
     if "--path" in sys.argv:
-        print(prepare(handoff_path(os.getcwd())))
+        path = prepare(handoff_path(os.getcwd()))
+        # Warning first and on stderr, path last, because the caller reads one interleaved
+        # block and the contract is that the path is the last line.
+        sys.stderr.write(occupied_note(path, datetime.datetime.now(datetime.timezone.utc)))
+        print(path)
         raise SystemExit(0)
     try:
         context = pickup(json.load(sys.stdin))
