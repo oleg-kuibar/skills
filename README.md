@@ -91,17 +91,17 @@ The hook fires on a new session, on `/clear`, and on compaction, which drops a
 parked handoff the same way a clear does. A handoff older than three days is
 injected with a line saying how old it is.
 
-Picking one up renames it to `<branch>.md.picked` instead of deleting it, and
+Picking one up renames it to `<branch-key>.md.picked` instead of deleting it, and
 keeps it 30 days. If a session is cleared before the handoff is read, rename it
 back:
 
 ```bash
-mv .claude/handoff/<branch>.md.picked .claude/handoff/<branch>.md
+mv .claude/handoff/<branch-key>.md.picked .claude/handoff/<branch-key>.md
 ```
 
-The parked file holds whatever the session had in context. It is hidden by a
-`.gitignore` inside `.claude/handoff/`, but the redaction of secrets is done by
-the model, not enforced by the script.
+The parked file holds whatever the session had in context. The path command ensures a
+`.gitignore` inside `.claude/handoff/` ignores the directory's contents, but the
+redaction of secrets is done by the model, not enforced by the script.
 
 There is one handoff per branch, so two sessions in the same repo share it. When
 `/park` asks for the path and a handoff is already sitting there unread, the
@@ -123,11 +123,10 @@ session, would die with the context, and did not make it into the handoff. Six
 rounds of that raised a handoff from 20/25 to 23/25 and produced five rule
 changes in `SKILL.md`.
 
-It drops every tool result before judging, which leaves about 4% of the
-transcript, so a whole session can be graded for well under a dollar. The judge
-loads no settings, so it grades against `SKILL.md` and not against your
-`CLAUDE.md` or hooks, and a score means the same thing on another machine.
-`--digest` prints what the judge would see and spends nothing.
+It keeps bounded excerpts from the start and end of every tool result, so command
+findings remain visible without letting raw output dominate the prompt. The judge loads
+no settings, so it grades against `SKILL.md` and not against your `CLAUDE.md` or hooks.
+`--digest` prints the reduced session evidence and spends nothing.
 
 ## Add a Skill
 
